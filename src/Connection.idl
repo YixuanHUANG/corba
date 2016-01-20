@@ -1,0 +1,9 @@
+#include "Dialogue.idl"
+interface Connection
+{
+ Dialogue connect(in string pseudo);
+ void disconnect(in string pseudo); 
+
+};
+
+
