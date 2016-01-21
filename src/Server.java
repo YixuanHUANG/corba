@@ -13,7 +13,6 @@ public class Server {
 		ORB orb = null;
 
 		try {
-
 			orb = ORB.init(args, props);
 			run(orb);
 		} catch (Exception ex) {
@@ -39,18 +38,13 @@ public class Server {
 				.narrow(orb.resolve_initial_references("RootPOA"));
 
 		org.omg.PortableServer.POAManager manager = rootPOA.the_POAManager();
-
-		// 实例化一个ConnectionImpl的对象
-
+		
 		Connection_impl ConnectionImpl = new Connection_impl();
-		// 从servant获得一个对象引用
+
 		obj = rootPOA.servant_to_reference(ConnectionImpl);
 		Connection Connection = ConnectionHelper.narrow(obj);
-		// 获得命名上下文
+
 		obj = orb.resolve_initial_references("NameService");
-
-		// INS（Interoperable Naming Service）的一部分
-
 		NamingContext ctx = NamingContextHelper.narrow(obj);
 
 		if (ctx == null) {
@@ -60,18 +54,11 @@ public class Server {
 
 		NameComponent[] name = new NameComponent[1];
 
-		
 		name[0] = new NameComponent("Connection", "");
 
 		ctx.rebind(name, Connection);
 		System.out.println("Server ready and waiting");
 
-		/*
-		 * String ref = orb.object_to_string(Connection); String refFile =
-		 * "Connection.ref"; java.io.PrintWriter out = new java.io.PrintWriter(
-		 * new java.io.FileOutputStream(refFile)); out.println(ref);
-		 * out.close();
-		 */
 		manager.activate();
 		orb.run();
 

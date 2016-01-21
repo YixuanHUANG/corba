@@ -3,27 +3,28 @@
 * _ConnectionStub.java .
 * 由IDL-to-Java 编译器 (可移植), 版本 "3.2"生成
 * 从Connection.idl
-* 2015年10月12日 星期一 下午04时25分03秒 CEST
+* 2016年1月20日 星期三 上午01时48分15秒 CET
 */
 
 public class _ConnectionStub extends org.omg.CORBA.portable.ObjectImpl implements Connection
 {
 
-  public Dialogue connect (String pseudo)
+  public Emitter connect (String pseudo, Receiver rcv)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("connect", true);
                 $out.write_string (pseudo);
+                ReceiverHelper.write ($out, rcv);
                 $in = _invoke ($out);
-                Dialogue $result = DialogueHelper.read ($in);
+                Emitter $result = EmitterHelper.read ($in);
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
                 String _id = $ex.getId ();
                 throw new org.omg.CORBA.MARSHAL (_id);
             } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-                return connect (pseudo        );
+                return connect (pseudo, rcv        );
             } finally {
                 _releaseReply ($in);
             }

@@ -33,9 +33,29 @@ public class Client {
 		System.exit(status);
 	}
 
-	static void run(ORB orb) {
+	static void run(ORB orb) throws Exception {
 		org.omg.CORBA.Object obj = null;
-
+		org.omg.CORBA.Object obj2;
+		org.omg.PortableServer.POA rootPOA = org.omg.PortableServer.POAHelper
+				.narrow(orb.resolve_initial_references("RootPOA"));
+		org.omg.PortableServer.POAManager manager = rootPOA.the_POAManager();
+		Receiver_impl ReceiverImpl = new Receiver_impl();
+		obj2 = rootPOA.servant_to_reference(ReceiverImpl);
+		Receiver Receiver = ReceiverHelper.narrow(obj2);
+		obj2 = orb.resolve_initial_references("NameService");
+		NamingContext ctx2 = NamingContextHelper.narrow(obj2);
+		
+		if (ctx2 == null) {
+			System.out.println("Le composant NameService n'est pas un repertoire");
+			System.exit(1);
+		}
+		NameComponent[] name2 = new NameComponent[1];
+		name2[0] = new NameComponent("Receiver", "");
+		ctx2.rebind(name2, Receiver);
+		System.out.println("Receiver is created!");
+		manager.activate();
+		orb.run();
+		
 		try {
 
 			obj = orb.resolve_initial_references("NameService");
@@ -54,7 +74,6 @@ public class Client {
 		NameComponent[] name = new NameComponent[1];
 
 		name[0] = new NameComponent("Connection", "");
-		
 
 		try {
 			obj = ctx.resolve(name);
@@ -63,42 +82,13 @@ public class Client {
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		/*
-		 * String refFile = "Dialogue.ref"; java.io.BufferedReader in = new
-		 * java.io.BufferedReader( new java.io.FileReader(refFile)); String ref
-		 * = in.readLine(); System.out.println("IOR :"+ref); obj =
-		 * orb.string_to_object(ref); //obj =
-		 * orb.string_to_object("relfile:/Dialogue.ref");
-		 */
-        
+		
 		Connection conn = ConnectionHelper.narrow(obj);
-		
-		Dialogue dialogue2= conn.connect("Titi");
-		Dialogue dialogue1= conn.connect("Tata");
-		System.out.println("Clients online: "+Arrays.toString(dialogue1.getClients()));
-		show(dialogue1.getMessages("Titi"));
-		//Use the function sendMessage(String receiver, String s)
-		dialogue1.sendMessage("Titi", "Coucou");
-	    dialogue1.sendMessage("Titi", "Comment ça va?");  
-	    dialogue1.sendMessage("Titi", "Tu es disponible demin?");    
-	    
-	    show(dialogue2.getMessages("Tata"));		    
-	    dialogue2.sendMessage("Tata", "Tout va bien,merci!");  	    
-	    dialogue2.sendMessage("Tata", "Qu'est-ce que tu vas faire demin?");  
-	
-	    //Use the function getMessages(String sender) 
-		show(dialogue1.getMessages("Titi"));			
-		conn.disconnect("Tata");	
-		System.out.println("Clients online: "+Arrays.toString(dialogue2.getClients()));		
+		Receiver TitiRcv = ReceiverHelper.narrow(obj2);	
+		Emitter TitiEmt = conn.connect("Titi", TitiRcv);
+		TitiEmt.sendMessage("Tutu", "Salut Tutu!");		
 		
 
-	}
-	public static void show(String[] list){
-		int size=list.length;
-		System.out.println(list[size-1]);
-		for(int i=0;i<size-1;i++)
-		System.out.println(list[i]);
 	}
 
 }

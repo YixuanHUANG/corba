@@ -3,7 +3,7 @@
 * ConnectionPOA.java .
 * 由IDL-to-Java 编译器 (可移植), 版本 "3.2"生成
 * 从Connection.idl
-* 2015年10月12日 星期一 下午04时25分03秒 CEST
+* 2016年1月20日 星期三 上午01时48分15秒 CET
 */
 
 public abstract class ConnectionPOA extends org.omg.PortableServer.Servant
@@ -33,10 +33,11 @@ public abstract class ConnectionPOA extends org.omg.PortableServer.Servant
        case 0:  // Connection/connect
        {
          String pseudo = in.read_string ();
-         Dialogue $result = null;
-         $result = this.connect (pseudo);
+         Receiver rcv = ReceiverHelper.read (in);
+         Emitter $result = null;
+         $result = this.connect (pseudo, rcv);
          out = $rh.createReply();
-         DialogueHelper.write (out, $result);
+         EmitterHelper.write (out, $result);
          break;
        }
 
