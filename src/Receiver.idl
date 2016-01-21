@@ -1,0 +1,12 @@
+typedef sequence<string> strings;
+
+interface Receiver
+{
+ void receive(in string from, in string message);
+ void initClients(in strings clients);
+ void addClient(in string client);
+ void remClient(in string client);
+
+};
+
+
